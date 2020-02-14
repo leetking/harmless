@@ -1,74 +1,45 @@
 #include <stdio.h>
 #include <string.h>
-#ifdef __APPLE__
-#include <malloc/malloc.h>
-#else
-#include <malloc.h>
-#endif
+#include <ctype.h>
+#include <stdlib.h>
+
 #include "pipe.h"
 #include "ucci.h"
+
+#define MAX(x, y)   ((x)>(y)? (x): (y))
+#define MIN(x, y)   ((x)<(y)? (x): (y))
 
 char command_line_str[LINE_INPUT_MAX_CHAR];
 
 static long coord_list[256];
 
+
 #ifdef _WIN32
-
-#include "windows.h"
-
+# include "windows.h"
 static void idle()
 {
     Sleep(1);
 }
-
 #else
-
-#include "unistd.h"
-
+# include "unistd.h"
 static void idle()
 {
     usleep(1000);
 }
+#endif /* _WIN32 */
 
-#endif
-
-static int read_digit(char *line_str, int max_value)
-{
-    int value = 0;
-
-    for ( ; ; ) {
-        if (*line_str >= '0' && *line_str <= '9') {
-            value *= 10;
-            value += *line_str - '0';
-            line_str ++;
-
-            if (value > max_value) {
-                value = max_value;
-            }
-
-        } else {
-            break;
-        }
-    }
-
-    return value;
-}
 
 ucci_comm_enum boot_line()
 {
     char line_str[LINE_INPUT_MAX_CHAR];
 
     open_pipe();
+    line_input(line_str);
 
-    while (!line_input(line_str)) {
-        idle();
-    }
-
-    if (strcmp(line_str, "ucci") == 0) {
+    if (strcmp(line_str, "ucci") == 0)
         return UCCI_COMM_UCCI;
-    } else {
-        return UCCI_COMM_NONE;
-    }
+
+    return UCCI_COMM_NONE;
 }
 
 ucci_comm_enum idle_line(ucci_comm_struct *ucs_command)
@@ -151,12 +122,14 @@ ucci_comm_enum idle_line(ucci_comm_struct *ucs_command)
         }
 
         if (strncmp(line_str, "time ", 5) == 0) {
+            int val = atoi(line_str);
             line_str += 5;
-            ucs_command->search.depth_time.time = read_digit(line_str, 3600000);
+            ucs_command->search.depth_time.time = MIN(3600000, val);
         } else if (strncmp(line_str, "depth ", 6) == 0) {
+            int val = atoi(line_str);
             line_str += 6;
             ucs_command->search.ut_mode  = UCCI_TIME_DEPTH;
-            ucs_command->search.depth_time.depth = read_digit(line_str, UCCI_MAX_DEPTH - 1);
+            ucs_command->search.depth_time.depth = MIN(UCCI_MAX_DEPTH-1, val);
         } else {
             ucs_command->search.ut_mode = UCCI_TIME_DEPTH;
             ucs_command->search.depth_time.depth = UCCI_MAX_DEPTH - 1;

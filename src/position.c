@@ -39,7 +39,7 @@ static void add_piece(BYTE pos, BYTE pc)
 
 static char piece_to_char(BYTE pc)
 {
-        if (pc < 32) {
+    if (pc < 32) {
         switch(pc) {
         case 16: return 'K';
         case 17:

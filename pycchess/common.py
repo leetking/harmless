@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # pycchess - just another chinese chess UI
@@ -42,9 +42,9 @@ chessman_image = ['king.png',
                   'cannon.png',
                   'pawn.png']
 
-check_sound = "sounds/CHECK.WAV"
-move_sound = 'sounds/MOVE.WAV'
-capture_sound = 'sounds/CAPTURE.WAV'
+check_sound = "sounds/check.wav"
+move_sound = 'sounds/move.wav'
+capture_sound = 'sounds/capture.wav'
 
 fen_str = 'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1'
 
@@ -111,7 +111,7 @@ def str_to_move(move_str):
     move_arr[3] = ord('9') - ord(move_str[3])
     return move_arr
 
-class move:
+class Move:
     def __init__(self, p, n):
         self.p = p
         self.n = n
@@ -119,6 +119,6 @@ class move:
 def load_sound(name):
     try:
         sound = pygame.mixer.Sound(name)
-    except pygame.error, message:
-        raise SystemExit, message
+    except pygame.error as message:
+        raise SystemExit(message)
     return sound

@@ -8,7 +8,7 @@ A chinese chess engine
 
 > require
 
-* `python-2.7.x`: <http://python.org>
+* `python-3.x`: <http://python.org>
 * `pygame-1.9.x`: <http://pygame.org>
 
 Hint: install pygame on OS X Lion
@@ -31,4 +31,5 @@ $ cd pycchess && python cchess.py
 
 ## KEYBOARD SHORTCUTS
 
-* `space`: new game
+* `r`: new game
+* `q`: quit game

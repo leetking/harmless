@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # pycchess - just another chinese chess UI
 # Copyright (C) 2011 - 2015 timebug
@@ -22,7 +21,7 @@ from common import *
 import sys
 import pygame
 
-class chessman:
+class Chessman:
     def __init__(self, kind, color, x, y, pc):
         self.kind = kind
         self.color = color

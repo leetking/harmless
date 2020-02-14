@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # pycchess - just another chinese chess UI
@@ -24,7 +24,7 @@ from chessnet import *
 import sys
 import pygame
 
-class chessboard:
+class Chessboard:
     def clearboard(self):
         self.board = {}
         self.selected = ()
@@ -54,7 +54,7 @@ class chessboard:
         self.capture_sound = load_sound(capture_sound)
 
     def add_chessman(self, kind, color, x, y, pc):
-        chessman_ = chessman(kind, color, x, y, pc)
+        chessman_ = Chessman(kind, color, x, y, pc)
 
         if kind == PAWN:
             if color == self.side:
@@ -72,19 +72,19 @@ class chessboard:
         count = 0
         for j in range(10):
             for i in range(9):
-                if (i, j) in self.board.keys():
-                    if count is not 0:
+                if (i, j) in list(self.board.keys()):
+                    if count != 0:
                         fen_str += str(count)
                         count = 0
                     chessman = self.board[(i, j)]
                     ch = get_char(chessman.kind, chessman.color)
 
-                    if ch is not '':
+                    if ch != '':
                         fen_str += ch
                 else:
                     count += 1
 
-            if count is not 0:
+            if count != 0:
                 fen_str += str(count)
                 count = 0
             if j < 9:
@@ -152,7 +152,7 @@ class chessboard:
         screen.fill((0,0,0))
         screen.blit(self.surface, (0, 0))
         # offset_ = 0
-        for key in self.board.keys():
+        for key in list(self.board.keys()):
             chessman = self.board[key]
             if chessman == None:
                 continue
@@ -172,7 +172,7 @@ class chessboard:
                 offset_ = offset
 
         for d in self.done:
-            if d not in self.board.keys():
+            if d not in list(self.board.keys()):
                 board_x = BORDER + d[0] * SPACE
                 board_y = BORDER + d[1] * SPACE
                 screen.blit(self.done_surface, (board_x, board_y), (offset_, 0, 52, 52))
@@ -200,7 +200,7 @@ class chessboard:
             min_y = min(w_king[1], b_king[1])
             max_y = max(w_king[1], b_king[1])
             for m_y in range(min_y+1, max_y):
-                if (w_king[0] ,m_y) in self.board.keys():
+                if (w_king[0] ,m_y) in list(self.board.keys()):
                     kill = False
                     break
             if kill:
@@ -221,7 +221,7 @@ class chessboard:
                 if self.board[p].move_check(n[0],n[1]):
                     tmp = knight_check[k]
                     m = (p[0]+tmp[0], p[1]+tmp[1])
-                    if m not in self.board.keys():
+                    if m not in list(self.board.keys()):
                         return True
 
         # rook
@@ -236,7 +236,7 @@ class chessboard:
                 max_y = max(p[1], q[1])
 
                 for m_y in range(min_y+1, max_y):
-                    if (p[0], m_y) in self.board.keys():
+                    if (p[0], m_y) in list(self.board.keys()):
                         kill = False
                         break
 
@@ -247,7 +247,7 @@ class chessboard:
                 max_x = max(p[0], q[0])
 
                 for m_x in range(min_x+1, max_x):
-                    if (m_x, p[1]) in self.board.keys():
+                    if (m_x, p[1]) in list(self.board.keys()):
                         kill = False
                         break
 
@@ -265,7 +265,7 @@ class chessboard:
                 max_y = max(p[1], q[1])
 
                 for m_y in range(min_y+1, max_y):
-                    if (p[0], m_y) in self.board.keys():
+                    if (p[0], m_y) in list(self.board.keys()):
                         if not over_flag:
                             over_flag = 1
                         else:
@@ -277,7 +277,7 @@ class chessboard:
                 min_x = min(p[0], q[0])
                 max_x = max(p[0], q[0])
                 for m_x in range(min_x+1, max_x):
-                    if (m_x, p[1]) in self.board.keys():
+                    if (m_x, p[1]) in list(self.board.keys()):
                         if not over_flag:
                             over_flag = 1
                         else:
@@ -308,19 +308,19 @@ class chessboard:
     def can_move(self, chessman, x, y):
         ok = True
         if chessman.kind == BISHOP:
-            m_x = (chessman.x + x) / 2
-            m_y = (chessman.y + y) / 2
-            if (m_x, m_y) in self.board.keys():
+            m_x = (chessman.x + x) // 2
+            m_y = (chessman.y + y) // 2
+            if (m_x, m_y) in list(self.board.keys()):
                 ok = False
 
         if chessman.kind == KNIGHT:
             if abs(chessman.x - x) == 2:
-                m_x = (chessman.x + x) / 2
+                m_x = (chessman.x + x) // 2
                 m_y = chessman.y
             if abs(chessman.y - y) == 2:
                 m_x = chessman.x
-                m_y = (chessman.y + y) / 2
-            if (m_x, m_y) in self.board.keys():
+                m_y = (chessman.y + y) // 2
+            if (m_x, m_y) in list(self.board.keys()):
                 ok = False
 
         if chessman.kind == ROOK or chessman.kind == CANNON:
@@ -329,20 +329,20 @@ class chessboard:
                 min_x = min(chessman.x, x)
                 max_x = max(chessman.x, x)
                 for m_x in range(min_x+1, max_x):
-                    if (m_x, y) in self.board.keys():
+                    if (m_x, y) in list(self.board.keys()):
                         over_flag += 1
             else:
                 min_y = min(chessman.y, y)
                 max_y = max(chessman.y, y)
                 for m_y in range(min_y+1, max_y):
-                    if (x, m_y) in self.board.keys():
+                    if (x, m_y) in list(self.board.keys()):
                         over_flag += 1
 
             if over_flag != 0:
                 ok = False
 
             if chessman.kind == CANNON:
-                if (x, y) in self.board.keys():
+                if (x, y) in list(self.board.keys()):
                     if over_flag == 1:
                         ok = True
                     else:
@@ -351,77 +351,68 @@ class chessboard:
 
     def move_chessman(self, x, y):
         flag = False
-        if (x, y) in self.board.keys():
-            chessman = self.board[(x, y)]
-            if chessman.color == self.side:
-                flag = True
-            else:
-                if self.selected is ():
+
+        selected = (x, y) in self.board.keys()
+
+        if self.selected == (x, y):
+            self.selected = ()
+            return False
+
+        elif selected and self.board[(x, y)].color == self.side:
+            self.selected = (x, y)
+            return False
+
+        elif self.selected:
+            chessman = self.board[self.selected]
+            if chessman.move_check(x, y):
+                if not self.can_move(chessman, x, y):
                     return False
 
-        if self.selected is ():
-            if flag:
-                self.selected = (x, y)
+                chessman_ = None
+                if (x, y) in list(self.board.keys()):
+                    chessman_ = self.board[(x, y)]
 
-        else:
-            if flag:
-                self.selected = (x, y)
-            else:
-                chessman = self.board[self.selected]
-                if chessman.move_check(x, y):
-                    ok = self.can_move(chessman, x, y)
-                    if ok:
-                        chessman_ = None
-                        if (x, y) in self.board.keys():
-                            chessman_ = self.board[(x, y)]
+                self.make_move(self.selected, (x, y), chessman_)
 
-                        self.make_move(self.selected, (x, y), chessman_)
-
-                        if not self.check(self.side):
-
-                            under_attack = self.check(1 - self.side)
-
-                            if under_attack is True:
-                                self.check_sound.play()
-                            else:
-                                if chessman_ == None:
-                                    self.move_sound.play()
-                                else:
-                                    self.capture_sound.play()
-
-                            self.done = [self.selected, (x, y)]
-
-                            if self.move_from == LOCAL:
-                                if self.mode == NETWORK:
-                                    move_str_ = move_to_str(self.selected[0],self.selected[1],x,y)
-                                    # print 'send move: %s' % move_str_
-                                    move_str = move_to_str(8-self.selected[0],9-self.selected[1],8-x,9-y)
-                                    if self.net is not None:
-                                        self.net.send_move(move_str)
-                                    else:
-                                        print 'self.net is None'
-
-                                if self.mode == AI:
-                                    fen_str = self.get_fen()
-                                    self.fin.write('position fen ' + fen_str + '\n')
-                                    # print "position fen %s" % fen_str
-                                    self.fin.flush()
-                                    self.fin.write('go depth ' + str(AI_SEARCH_DEPTH)  + '\n')
-                                    self.fin.flush()
-
-                            self.selected = ()
-
-                            return True
+                if not self.check(self.side):
+                    under_attack = self.check(1 - self.side)
+                    if under_attack is True:
+                        self.check_sound.play()
+                    else:
+                        if chessman_ == None:
+                            self.move_sound.play()
                         else:
-                            self.unmake_move(self.selected, (x, y), chessman_)
+                            self.capture_sound.play()
 
-                    return False
+                    self.done = [self.selected, (x, y)]
+                    if self.move_from == LOCAL:
+                        if self.mode == NETWORK:
+                            move_str_ = move_to_str(self.selected[0],self.selected[1],x,y)
+                            # print 'send move: %s' % move_str_
+                            move_str = move_to_str(8-self.selected[0],9-self.selected[1],8-x,9-y)
+                            if self.net != None:
+                                self.net.send_move(move_str)
+                            else:
+                                print('self.net is None')
+
+                        if self.mode == AI:
+                            fen_str = self.get_fen()
+                            self.fin.write('position fen ' + fen_str + '\n')
+                            # print "position fen %s" % fen_str
+                            self.fin.flush()
+                            self.fin.write('go depth ' + str(AI_SEARCH_DEPTH)  + '\n')
+                            self.fin.flush()
+
+                    self.selected = ()
+                    return True
+                else:
+                    self.unmake_move(self.selected, (x, y), chessman_)
 
     def make_move(self, p, n, chessman_):
         chessman = self.board[p]
 
         self.piece[chessman.pc] = n
-        if chessman_ is not None:
+        if chessman_ != None:
             self.piece[chessman_.pc] = 0
 
         chessman.x, chessman.y = n
@@ -435,7 +426,7 @@ class chessboard:
         self.board[p] = chessman
 
         self.piece[chessman.pc] = p
-        if chessman_ is not None:
+        if chessman_ != None:
             self.board[n] = chessman_
             self.piece[chessman_.pc] = n
         else:
@@ -443,7 +434,7 @@ class chessboard:
 
     def save_move(self, p, n, moves, side):
         flag = False
-        if n in self.board.keys():
+        if n in list(self.board.keys()):
             if self.board[n].color is side:
                 flag = True
 
@@ -453,7 +444,7 @@ class chessboard:
             flag = True
 
         if not flag:
-            move_ = move(p, n)
+            move_ = Move(p, n)
             moves.append(move_)
 
     def gen_moves(self, side):
@@ -492,7 +483,7 @@ class chessboard:
                 if self.board[p].move_check(n[0], n[1]):
                     tmp = bishop_check[k]
                     m = (p[0]+tmp[0], p[1]+tmp[1])
-                    if m not in self.board.keys():
+                    if m not in list(self.board.keys()):
                         self.save_move(p, n, moves, side)
 
         # knight
@@ -506,7 +497,7 @@ class chessboard:
                 if self.board[p].move_check(n[0], n[1]):
                     tmp = knight_check[k]
                     m = (p[0]+tmp[0], p[1]+tmp[1])
-                    if m not in self.board.keys():
+                    if m not in list(self.board.keys()):
                         self.save_move(p, n, moves, side)
 
         # rook
@@ -520,12 +511,12 @@ class chessboard:
                     n = (p[0]+j*tmp[0],p[1]+j*tmp[1])
                     if not self.board[p].move_check(n[0], n[1]):
                         break
-                    if n not in self.board.keys():
-                        move_ = move(p, n)
+                    if n not in list(self.board.keys()):
+                        move_ = Move(p, n)
                         moves.append(move_)
                     else:
-                        if self.board[n].color is not side:
-                            move_ = move(p, n)
+                        if self.board[n].color != side:
+                            move_ = Move(p, n)
                             moves.append(move_)
                         break
 
@@ -541,9 +532,9 @@ class chessboard:
                     n = (p[0]+j*tmp[0],p[1]+j*tmp[1])
                     if not self.board[p].move_check(n[0], n[1]):
                         break
-                    if n not in self.board.keys():
+                    if n not in list(self.board.keys()):
                         if not over_flag:
-                            move_ = move(p, n)
+                            move_ = Move(p, n)
                             moves.append(move_)
                     else:
                         if not over_flag:
@@ -577,7 +568,7 @@ class chessboard:
             p = move_.p
             n = move_.n
             chessman_ = None
-            if n in self.board.keys():
+            if n in list(self.board.keys()):
                 chessman_ = self.board[n]
             self.make_move(p, n, chessman_)
             over = self.check(side)
